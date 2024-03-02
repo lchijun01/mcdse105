@@ -74,7 +74,8 @@
         </div>
         <div>
             <h1>List of Products</h1>
-            <table border="1">
+            <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for product...">
+            <table border="1" id="productTable">
                 <thead>
                     <tr>
                         <th>SKU</th>
@@ -93,11 +94,58 @@
                                 <input type="hidden" id="productId_${product.id}" value="${product.id}" /></td>
                             <td>${product.costPrice}</td>
                             <td><button id="editButton_${product.id}" onclick="toggleEditSave(this, '${product.id}')">Edit</button></td>
+                            <td><button onclick="deleteRow('${product.id}')">Delete</button></td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
         </div>
+        <script>
+            function searchTable() {
+                var input, filter, table, tr, td1, td2, i, txtValue1, txtValue2;
+                input = document.getElementById("searchInput");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("productTable");
+                tr = table.getElementsByTagName("tr");
+
+                for (i = 0; i < tr.length; i++) {
+                    td1 = tr[i].getElementsByTagName("td")[0]; // SKU column
+                    td2 = tr[i].getElementsByTagName("td")[1]; // Product Name column
+                    if (td1 && td2) {
+                        txtValue1 = td1.textContent || td1.innerText;
+                        txtValue2 = td2.textContent || td2.innerText;
+                        if (txtValue1.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            
+            function deleteRow(productId) {
+                if (confirm("Are you sure you want to delete this item?")) {
+                    fetch('/product/' + productId + '/delete', {
+                        method: 'GET'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Success:', data);
+                        // Remove the deleted row from the table
+                        var row = document.getElementById("editButton_" + productId).parentNode.parentNode;
+                        row.parentNode.removeChild(row);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
+            }
+        </script>
     </section>
 
     <footer><a href="/">CJ Inventory System</a> &copy; 2024</footer>

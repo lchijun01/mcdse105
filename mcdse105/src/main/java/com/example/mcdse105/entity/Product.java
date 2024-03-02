@@ -34,7 +34,6 @@ public class Product {
     private BigDecimal costPrice;
 
     // Getters and setters
-    // Omitted for brevity
 
     public Long getId() {
         return id;
