@@ -17,6 +17,7 @@
         <input type="password" id="password" name="password" required /><br><br>
         
         <button type="submit">Login</button>
+        <p>Don't have an account? <button type="button" onclick="location.href='/register'">Sign up</button> for free!
         
         <c:if test="${not empty errmsg}">
             <p style="color: red;">${errmsg} Please try again.</p>

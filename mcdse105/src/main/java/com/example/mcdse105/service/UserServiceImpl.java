@@ -18,6 +18,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerNewUser(User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Username already registered");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

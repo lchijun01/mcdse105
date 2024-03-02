@@ -23,6 +23,7 @@
 		<input type="password" id="cpassword" name="cpassword" required /><br>
 		
 		<button type="submit">Register</button>
+		<p>Already have an account? <button type="button" onclick="location.href='/login'">Login</button> now</p>
 		
 		<c:if test="${not empty errmsg}">
 			<p style="color: red;">${errmsg} Please try again.</p>

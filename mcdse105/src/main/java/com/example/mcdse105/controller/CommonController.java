@@ -32,9 +32,14 @@ public class CommonController {
     }
 
     @PostMapping("/register")
-    public String registerNewUser(@ModelAttribute("user") User user) {
-        userService.registerNewUser(user);
-        return "redirect:/login";
+    public String registerNewUser(@ModelAttribute("user") User user, Model model) {
+        try {
+            userService.registerNewUser(user);
+            return "redirect:/login";
+        } catch (RuntimeException e) {
+            model.addAttribute("errmsg", "Username already registered");
+            return "register";
+        }
     }
 
     @GetMapping("/login")
