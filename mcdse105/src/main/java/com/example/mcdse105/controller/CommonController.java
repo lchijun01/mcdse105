@@ -80,7 +80,12 @@ public class CommonController {
     }
 
     @GetMapping("/product")
-    public String getAllProducts(Model model) {
+    public String getAllProducts(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("username") == null) {
+            return "redirect:/login";
+        }
+
         List<Product> products = productService.getAllProducts();
         model.addAttribute("products", products);
         return "product";
