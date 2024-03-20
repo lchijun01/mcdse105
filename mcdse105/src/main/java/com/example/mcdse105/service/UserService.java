@@ -9,4 +9,6 @@ public interface UserService {
     User verifyUser(String username, String password);
 
     List<User> findAllNonAdminUsers();
+    
+    void updateUserRole(Long userId, boolean makeAdmin);
 }

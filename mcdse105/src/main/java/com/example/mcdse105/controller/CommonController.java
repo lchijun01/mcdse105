@@ -26,12 +26,24 @@ public class CommonController {
     private ProductService productService;
 
     @GetMapping("/")
-    public String index(HttpServletRequest request) {
+    public String index(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (session.getAttribute("username") == null) {
             return "redirect:/login";
         }
+        
+        List<User> nonAdminUsers = userService.findAllNonAdminUsers();
+        model.addAttribute("nonAdminUsers", nonAdminUsers);
         return "index";
+    }
+
+    @PostMapping("/role")
+    public String updateRole(@RequestParam("account") Long userId, 
+                            @RequestParam(name = "admin", defaultValue = "no") String isAdmin,
+                            HttpServletRequest request) {
+        boolean makeAdmin = "yes".equals(isAdmin);
+        userService.updateUserRole(userId, makeAdmin);
+        return "redirect:/role-success";
     }
 
     @GetMapping("/register")

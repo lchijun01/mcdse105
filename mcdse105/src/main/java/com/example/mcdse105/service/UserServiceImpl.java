@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -40,6 +42,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllNonAdminUsers() {
-        return userRepository.findByIsAdmin("no");
+        return userRepository.findByIsAdminNot("yes");
     }
+    
+    @Transactional
+    @Override
+    public void updateUserRole(Long userId, boolean makeAdmin) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setIsAdmin(makeAdmin ? "yes" : "no");
+        userRepository.save(user);
+    }  
 }

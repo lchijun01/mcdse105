@@ -161,19 +161,22 @@
 	<c:if test="${sessionScope.isAdmin}">
 		<section id="role">
 			<h2 id="animatedText">Manage your role</h2>
-			<form action="role">
-				<select class="form-select" name="account" id="account">
-					<option value="">select account</option>
+			<form action="${pageContext.request.contextPath}/role" method="post">
+				<select class="form-select" name="account" id="account" required>
+					<option value="">Select account</option>
 					<c:forEach items="${nonAdminUsers}" var="user">
 						<option value="${user.id}">${user.username}</option>
 					</c:forEach>
 				</select>
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+					<input class="form-check-input" type="checkbox" value="yes" id="defaultCheck1" name="admin">
 					<label class="form-check-label" for="defaultCheck1">Admin</label>
 				</div>
-				<button class="btn btn-outline-dark">Update role</button>
-			</form>
+				<c:if test="${_csrf != null}">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				</c:if>
+				<button class="btn btn-outline-dark" type="submit">Update role</button>
+			</form>			
 		</section>
 	</c:if>
 	<footer id="footer">
