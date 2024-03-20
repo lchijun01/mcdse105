@@ -5,7 +5,7 @@ import com.example.mcdse105.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -13,7 +13,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
+    @Autowired  
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -26,14 +26,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean verifyUser(String username, String password) {
-        List<User> users = userRepository.findByUsername(username);
-        for (User user : users) {
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                return true;
+    public User verifyUser(String username, String password) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        
+        if(userOpt.isPresent()) {
+            User user = userOpt.get();
+            if(passwordEncoder.matches(password, user.getPassword())) {
+                return user;
             }
         }
-        return false;
+        return null;
     }
 
+    @Override
+    public List<User> findAllNonAdminUsers() {
+        return userRepository.findByIsAdmin("no");
+    }
 }

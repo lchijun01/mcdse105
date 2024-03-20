@@ -1,5 +1,6 @@
 package com.example.mcdse105.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +17,18 @@ public class User {
     private String password;
     private String email;
 
+    @Column(name = "is_admin")
+    private String isAdmin; 
+
     // Getters and Setters
+    public String getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(String isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
     public Long getId() {
         return id;
     }

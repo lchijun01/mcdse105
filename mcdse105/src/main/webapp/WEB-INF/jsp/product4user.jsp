@@ -185,24 +185,9 @@
         </div>
     </section>    
     <section class="main-content">
-        <div id="addProductForm" style="display:none;position: fixed;z-index: 1001;background-color:aquamarine">
-            <h1>ADD ITEMS HERE</h1>
-            <form action="/product" method="post">
-                <label for="sku">SKU:</label>
-                <input type="text" id="sku" name="sku" required /><br>
-                <label for="productName">Product Name:</label>
-                <input type="text" id="productName" name="productName" required /><br>
-                <label for="quantity">Quantity:</label>
-                <input type="text" id="quantity" name="quantity" required /><br>
-                <label for="costPrice">Cost Price:</label>
-                <input type="text" id="costPrice" name="costPrice" required /><br>
-                <button type="submit">Add Product</button>
-            </form>
-        </div>
         <div>
             <div style="display: flex;justify-content:space-between;margin: 0 5%;padding:2%">
                 <h1>In stock</h1>
-                <button class="btn btn-outline-success" id="addProductButton">Add New Product</button>
                 <input type="text" id="searchInput" onkeyup="searchTable()" placeholder=" Search for product...">
             </div>
             <table border="1" id="productTable" class="table table-striped">
@@ -212,8 +197,6 @@
                         <th>Product Name</th>
                         <th>Quantity</th>
                         <th>Cost price</th>
-                        <th></th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -221,11 +204,8 @@
                         <tr>
                             <td>${product.sku}</td>
                             <td>${product.productName}</td>
-                            <td><input type="text" value="${product.quantity}" id="quantity_${product.id}" readonly />
-                                <input type="hidden" id="productId_${product.id}" value="${product.id}" /></td>
+                            <td>${product.quantity}</td>
                             <td>${product.costPrice}</td>
-                            <td><button class="btn btn-link" id="editButton_${product.id}" onclick="toggleEditSave(this, '${product.id}')">Edit</button></td>
-                            <td><button class="btn btn-link" onclick="deleteRow('${product.id}')">Delete</button></td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -253,42 +233,6 @@
                     }
                 }
             }
-            function deleteRow(productId) {
-                if (confirm("Are you sure you want to delete this item?")) {
-                    fetch('/product/' + productId + '/delete', {
-                        method: 'GET'
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Success:', data);
-                        var row = document.getElementById("editButton_" + productId).parentNode.parentNode;
-                        row.parentNode.removeChild(row);
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-                }
-            }
-            function showAddProductForm() {
-                var form = document.getElementById('addProductForm');
-                form.style.display = 'block';
-                var button = document.getElementById('addProductButton');
-                button.style.display = 'none';
-            }
-            document.addEventListener('click', function(event) {
-                var form = document.getElementById('addProductForm');
-                var button = document.getElementById('addProductButton');
-                if (!form.contains(event.target) && event.target !== button) {
-                    form.style.display = 'none';
-                    button.style.display = 'block';
-                }
-            });
-            document.getElementById('addProductButton').addEventListener('click', showAddProductForm);
         </script>
     </section>
 

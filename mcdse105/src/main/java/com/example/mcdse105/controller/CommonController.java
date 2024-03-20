@@ -41,8 +41,14 @@ public class CommonController {
     }
 
     @PostMapping("/register")
-    public String registerNewUser(@ModelAttribute("user") User user, Model model) {
+    public String registerNewUser(@ModelAttribute("user") User user, 
+                                @RequestParam(required = false) String isAdmin, Model model) {
         try {
+            if (isAdmin != null && "yes".equals(isAdmin)) {
+                user.setIsAdmin("yes");
+            } else {
+                user.setIsAdmin("no");
+            }
             userService.registerNewUser(user);
             return "redirect:/login";
         } catch (RuntimeException e) {
@@ -58,15 +64,19 @@ public class CommonController {
 
     @PostMapping("/login")
     public String login(@RequestParam("username") String username,
-            @RequestParam("password") String password,
-            Model model, HttpServletRequest request) {
-        if (userService.verifyUser(username, password)) {
+                        @RequestParam("password") String password,
+                        Model model, HttpServletRequest request) {
+        User user = userService.verifyUser(username, password);
+        if (user != null) {
             HttpSession session = request.getSession();
-            session.setAttribute("username", username); // Set username in session
-            return "redirect:/"; // Redirect to homepage if login is successful
+            session.setAttribute("username", username);
+            session.setAttribute("isAdmin", "yes".equals(user.getIsAdmin()));
+            System.out.println("Session isAdmin: " + session.getAttribute("isAdmin"));
+
+            return "redirect:/";
         } else {
             model.addAttribute("errmsg", "Incorrect username or password. Please try again.");
-            return "login"; // Show login page with error message
+            return "login";
         }
     }
 
@@ -82,10 +92,14 @@ public class CommonController {
     @GetMapping("/product")
     public String getAllProducts(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
+        System.out.println("Session isAdmin: " + session.getAttribute("isAdmin"));
+
         if (session.getAttribute("username") == null) {
             return "redirect:/login";
+        } else if (!(Boolean)session.getAttribute("isAdmin")) {
+            return "redirect:/product4user";
         }
-
+        
         List<Product> products = productService.getAllProducts();
         model.addAttribute("products", products);
         return "product";
@@ -131,6 +145,18 @@ public class CommonController {
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return "redirect:/product";
+    }
+
+    @GetMapping("/product4user")
+    public String getAllProducts4user(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("username") == null) {
+            return "redirect:/login";
+        }
+
+        List<Product> products = productService.getAllProducts();
+        model.addAttribute("products", products);
+        return "product4user";
     }
 
 }
